@@ -283,6 +283,8 @@ Le guide complet, de zéro à la Release : [`docs/PUBLIER.md`](docs/PUBLIER.md).
 3. Publie une Release GitHub dont le tag est la version (`v1.0.0`) et joins-y le `.zip`.
 4. Pour un plugin officiel, joins aussi l'`attestation.json` signée (voir « Approbation »).
 
+Avant de publier, `node tools/sheet-check.js <dossier du plugin>` vérifie que ta fiche dit vrai : chaque touche de la section « Commandes » du README est lue par le code, « N niveaux » correspond à la liste de niveaux du code, et `syncMode` / `syncInfo` correspondent à ce que le plugin garde vraiment.
+
 ## Approbation (plugins officiels)
 
 Un plugin **approuvé** a été examiné par NeoDex et déclaré compatible avec une plage de versions.
