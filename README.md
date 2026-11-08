@@ -120,7 +120,7 @@ Ce que le bac à sable interdit passe par NeoDex, qui vérifie l'autorisation à
 | `ctx.onFiles(fn)` | `opens` | recevoir les fichiers ouverts avec le plugin (chemins) |
 | `ctx.share(données)` / `ctx.onShare(fn)` | toujours / `accepts` | partager un texte ou un lien ; recevoir ce qu'on lui partage |
 | `ctx.search.provide(fn)` | `search` | ses résultats dans la recherche de l'accueil : `fn(q)` renvoie `[{ id, title, hint }]` (8 au plus) ; un clic ouvre le plugin et lance sa commande `search` avec l'`id` choisi |
-| `ctx.widget.set({ title, text })` ou `({ title, lines: [...] })` / `.clear()` | `widget: true` | son widget sur l'accueil (4 lignes au plus) |
+| `ctx.widget.set({ title, text })` ou `({ title, lines: [...], actions: [{ label, command }] })` / `.clear()` | `widget: true` | son widget sur l'accueil (4 lignes au plus) ; `actions` : jusqu'à 3 boutons, chacun lance une de tes `commands` (un id non déclaré est ignoré) |
 | `ctx.background.every(minutes, fn)` | `background` | une tâche de fond, même onglet fermé (plugin chargé au démarrage) |
 | `ctx.backup.list()` / `.restore(nom)` | `storage` | les sauvegardes de son dossier de données, et revenir à l'une d'elles |
 | `ctx.files.add/read/remove` | `files` | fichiers (images, exports…) du plugin |
