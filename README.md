@@ -35,6 +35,7 @@ L'exemple complet le plus simple est dans [`examples/hello`](examples/hello).
   "type": "app",
   "category": "Outils",
   "mobile": true,
+  "compatibility": ["windows", "android", "linux"],
   "system": false,
   "dependencies": {},
   "permissions": ["storage"]
@@ -55,6 +56,7 @@ L'exemple complet le plus simple est dans [`examples/hello`](examples/hello).
 | `type` | `app` (une application), `mod` (modifie NeoDex : sorties animes, calendrier…) ou `theme` (n'apporte que des thèmes) |
 | `category` | catégorie dans NeoStore (Jeux, Outils, Bureautique…) |
 | `mobile` | `true` si compatible avec le téléphone |
+| `compatibility` | **à déclarer dans chaque plugin** : les systèmes où il marche, parmi `"windows"`, `"android"` et `"linux"`. NeoDex refuse de l'installer sur un autre système et NeoStore affiche la liste sur la fiche. Un plugin qui lance du code natif (`main`, `system:main`, `system:startup`, `system:processes`) doit vérifier qu'il marche vraiment sur chaque système qu'il annonce. (Pour les anciens plugins sans le champ : `windows` et `linux`, plus `android` si `mobile` ; seulement `windows` si le plugin lance du code natif avec `system:main`, `system:startup` ou `system:processes`). NeoDex refuse de l'installer ailleurs et NeoStore l'affiche |
 | `system` | réservé : un plugin système ne peut pas être désinstallé et se range dans la catégorie « Système » (fixé par NeoDex, pas par l'auteur). Réservé aux applis qui dépendent du cœur de NeoDex |
 | `main` | le **volet système** du plugin : un fichier Node (`main.js`) chargé par NeoDex seulement si le plugin est signé, activé et que l'autorisation `system:main` est accordée (voir plus bas) |
 | `commands` | ses commandes : `[{ "id": "find", "title": "Chercher", "keys": "Ctrl+Alt+F", "global": false, "background": false }]`, dans la palette de commandes et la recherche de l'accueil (`ctx.commands.on`) ; `global` : raccourci actif hors de NeoDex (autorisation `shortcuts`) ; `background` : sans passer l'onglet au premier plan |
@@ -283,7 +285,14 @@ Le guide complet, de zéro à la Release : [`docs/PUBLIER.md`](docs/PUBLIER.md).
 3. Publie une Release GitHub dont le tag est la version (`v1.0.0`) et joins-y le `.zip`.
 4. Pour un plugin officiel, joins aussi l'`attestation.json` signée (voir « Approbation »).
 
-Avant de publier, `node tools/sheet-check.js <dossier du plugin>` vérifie que ta fiche dit vrai : chaque touche de la section « Commandes » du README est lue par le code, « N niveaux » correspond à la liste de niveaux du code, et `syncMode` / `syncInfo` correspondent à ce que le plugin garde vraiment.
+Avant de publier, vérifie ces règles (l'outil d'approbation refuse un plugin officiel qui ne les suit pas) :
+
+- `compatibility` est déclaré dans `plugin.json` (voir plus haut) ;
+- `locales/en.json` traduit tous les textes affichés : `node tools/i18n.js missing <dossier du plugin>` ne doit rien lister ;
+- il y a un `README.md` et un `README.en.md` ;
+- `node tools/sheet-check.js <dossier du plugin>` passe.
+
+`node tools/sheet-check.js <dossier du plugin>` vérifie que ta fiche dit vrai : chaque touche de la section « Commandes » du README est lue par le code, « N niveaux » correspond à la liste de niveaux du code, et `syncMode` / `syncInfo` correspondent à ce que le plugin garde vraiment.
 
 ## Approbation (plugins officiels)
 

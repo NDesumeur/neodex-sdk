@@ -8,10 +8,11 @@ Ce guide va de zéro à un plugin que n'importe qui peut installer depuis NeoSto
 2. Ajoute-lui le *topic* **`neodex-plugin`** (page du dépôt → roue dentée à côté de « About »). C'est
    ce qui permet à NeoStore de le trouver.
 3. Mets-y au minimum :
-   - `plugin.json` : l'identité du plugin (voir le [README](../README.md)) ;
+   - `plugin.json` : l'identité du plugin (voir le [README](../README.md)), avec `compatibility` : les systèmes où il marche (`windows`, `android`, `linux`) ;
    - `index.js` : le code ;
    - `icon.png` : l'icône (carrée, de préférence en pixel art, 64 × 64 ou plus) ;
-   - `README.md` : ce que fait le plugin, en une phrase pour l'utilisateur.
+   - `README.md` et `README.en.md` : ce que fait le plugin, en français et en anglais ;
+   - `locales/en.json` : la traduction anglaise de chaque texte affiché (`node tools/i18n.js missing <dossier>` liste ce qui manque).
 
 L'identifiant (`id`) est de la forme `auteur.nom`, en minuscules, chiffres et points (`mondev.monplugin`).
 Pas de tiret. Il ne change jamais d'une version à l'autre.

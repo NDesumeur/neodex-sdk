@@ -66,6 +66,13 @@
       "type": "boolean",
       "default": false
     },
+    "compatibility": {
+      "type": "array",
+      "description": "Systèmes où le plugin marche, à déclarer dans chaque plugin. Ancien plugin sans ce champ : windows et linux, plus android si mobile ; windows seulement s'il lance du code natif.",
+      "items": { "enum": ["windows", "android", "linux"] },
+      "minItems": 1,
+      "uniqueItems": true
+    },
     "system": {
       "type": "boolean",
       "default": false

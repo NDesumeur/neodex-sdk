@@ -11,6 +11,7 @@
   "type": "app",
   "category": "Outils",
   "mobile": true,
+  "compatibility": ["windows", "android", "linux"],
   "system": false,
   "dependencies": {},
   "permissions": ["storage"]
