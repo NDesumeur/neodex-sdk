@@ -63,7 +63,7 @@ L'exemple complet le plus simple est dans [`examples/hello`](examples/hello).
 | `opens` | « ouvrir avec » : les extensions qu'il sait ouvrir, `[".pdf"]` ; Fichiers et la Visionneuse lui envoient les fichiers (`ctx.onFiles`) |
 | `accepts` | ce qu'on peut lui partager : `["text", "url"]` (`ctx.onShare`) |
 | `widget` | le fichier JS de son widget sur l'accueil (ex. `"widget.js"`) : un module `export default function (ctx)` qui dessine ce qu'il veut dans sa propre iframe (son HTML, son CSS, ses animations), avec l'autorisation `widget` dans `permissions`. `true` : un widget en données, dessiné par NeoDex |
-| `themes` | des thèmes pour NeoDex : `[{ "id": "menthe", "name": "Menthe", "hue": 150, "sat": 40, "accent": "#33dd99", "light": "#aaffdd", "third": "#ffd84a" }]` |
+| `themes` | des thèmes pour NeoDex (12 au plus) : `[{ "id": "menthe", "name": "Menthe", "hue": 150, "sat": 40, "accent": "#33dd99", "light": "#aaffdd", "third": "#ffd84a", "style": "jardin", "about": "…" }]`. `style` (facultatif) : le décor et les polices d'un style de NeoDex (`terminal`, `synthwave`, `jardin`, `steampunk`…). Un plugin de `type` `"theme"` n'a ni `entry` ni `view` et se range dans la catégorie Thèmes de NeoStore (NeoDex 3.2.1 et plus). |
 | `sync` | les règles de fusion de la synchro pour les documents du plugin (voir « Le dossier de données ») |
 | `dependencies` | autres plugins requis : `{ "neodex.autreplugin": ">=1.2.0" }` (installés automatiquement depuis le catalogue) |
 | `uses` | plugins dont celui-ci lit les données : `["neodex.peche"]` (demande la permission `data:<id>:read`) |
