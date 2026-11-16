@@ -114,6 +114,12 @@
       "risk": "faible"
     },
     {
+      "id": "widget",
+      "label": "Widget sur l'accueil",
+      "sentence": "Peut afficher un petit aperçu en direct sur ton accueil (tu peux le couper ou le déplacer avec « Disposer »).",
+      "risk": "faible"
+    },
+    {
       "id": "background",
       "label": "Tâches de fond",
       "sentence": "Peut tourner sans être ouvert, dès le démarrage de NeoDex.",

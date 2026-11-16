@@ -234,8 +234,11 @@
       "description": "ce qu'on peut partager avec le plugin (ctx.onShare)"
     },
     "widget": {
-      "type": "boolean",
-      "description": "le plugin pose un widget sur l'accueil (ctx.widget)"
+      "oneOf": [
+        { "type": "boolean" },
+        { "type": "string", "pattern": "^[\\w-]+(/[\\w-]+)*\\.js$" }
+      ],
+      "description": "le widget du plugin sur l'accueil : le fichier JS qui le dessine dans sa propre iframe (ex. \"widget.js\"), ou true pour un widget en données dessiné par NeoDex (ctx.widget)"
     },
     "themes": {
       "type": "array",

@@ -62,7 +62,7 @@ L'exemple complet le plus simple est dans [`examples/hello`](examples/hello).
 | `commands` | ses commandes : `[{ "id": "find", "title": "Chercher", "keys": "Ctrl+Alt+F", "global": false, "background": false }]`, dans la palette de commandes et la recherche de l'accueil (`ctx.commands.on`) ; `global` : raccourci actif hors de NeoDex (autorisation `shortcuts`) ; `background` : sans passer l'onglet au premier plan |
 | `opens` | « ouvrir avec » : les extensions qu'il sait ouvrir, `[".pdf"]` ; Fichiers et la Visionneuse lui envoient les fichiers (`ctx.onFiles`) |
 | `accepts` | ce qu'on peut lui partager : `["text", "url"]` (`ctx.onShare`) |
-| `widget` | `true` : il pose un widget sur l'accueil (`ctx.widget`) |
+| `widget` | le fichier JS de son widget sur l'accueil (ex. `"widget.js"`) : un module `export default function (ctx)` qui dessine ce qu'il veut dans sa propre iframe (son HTML, son CSS, ses animations), avec l'autorisation `widget` dans `permissions`. `true` : un widget en données, dessiné par NeoDex |
 | `themes` | des thèmes pour NeoDex : `[{ "id": "menthe", "name": "Menthe", "hue": 150, "sat": 40, "accent": "#33dd99", "light": "#aaffdd", "third": "#ffd84a" }]` |
 | `sync` | les règles de fusion de la synchro pour les documents du plugin (voir « Le dossier de données ») |
 | `dependencies` | autres plugins requis : `{ "neodex.autreplugin": ">=1.2.0" }` (installés automatiquement depuis le catalogue) |
@@ -107,6 +107,7 @@ Ce que le bac à sable interdit passe par NeoDex, qui vérifie l'autorisation à
 | `ctx.id`, `ctx.version` | toujours | identité du plugin |
 | `ctx.view` | toujours | l'élément HTML à remplir (ta fenêtre) |
 | `ctx.el(tag, class?, text?)` | toujours | créer un élément (aide) |
+| `ctx.t(phrase, {variables}?)` (aussi `ctx.host.t`) | toujours | la phrase en anglais quand NeoDex est en anglais, prise dans `locales/en.json` : pour le texte qui n'est pas dans la page (dessiné dans un canvas, construit en JS). `t('Il reste {n} jours', {n: 3})` : une seule entrée pour toute la phrase, la variable est mise après la traduction. Le texte de la page, lui, est traduit tout seul |
 | `ctx.ui.toast(msg, err?)` | toujours | message éphémère |
 | `ctx.ui.newTab(url)` | toujours | ouvrir un onglet |
 | `ctx.ui.pixIcon(rows)` | toujours | icône pixel art |
@@ -122,7 +123,9 @@ Ce que le bac à sable interdit passe par NeoDex, qui vérifie l'autorisation à
 | `ctx.onFiles(fn)` | `opens` | recevoir les fichiers ouverts avec le plugin (chemins) |
 | `ctx.share(données)` / `ctx.onShare(fn)` | toujours / `accepts` | partager un texte ou un lien ; recevoir ce qu'on lui partage |
 | `ctx.search.provide(fn)` | `search` | ses résultats dans la recherche de l'accueil : `fn(q)` renvoie `[{ id, title, hint }]` (8 au plus) ; un clic ouvre le plugin et lance sa commande `search` avec l'`id` choisi |
-| `ctx.widget.set({ title, text })` ou `({ title, lines: [...], actions: [{ label, command }] })` / `.clear()` | `widget: true` | son widget sur l'accueil (4 lignes au plus) ; `actions` : jusqu'à 3 boutons, chacun lance une de tes `commands` (un id non déclaré est ignoré) |
+| `ctx.widget.set({ title, text })` ou `({ title, lines: [...], actions: [{ label, command }] })` / `.clear()` | autorisation `widget` (ou `widget: true`) | son widget sur l'accueil (4 lignes au plus), que l'utilisateur peut couper ou déplacer (bouton « Disposer ») ; `bar` : une jauge de 0 à 1 ; `img` : une petite image en adresse `data:image/png;base64,…` (200 ko au plus) ; `actions` : jusqu'à 3 boutons, chacun lance une de tes `commands` (un id non déclaré est ignoré) |
+| `ctx.widget.set({ data })` | `widget: "widget.js"` | envoie n'importe quelles données (200 ko au plus) à ton widget ; les dernières sont gardées, il les a même quand ton plugin est fermé |
+| dans `widget.js` : `ctx.widget.onData(f)`, `ctx.widget.size()` / `.onSize(f)`, `ctx.widget.command(id)`, `ctx.widget.open()` | `widget: "widget.js"` | ton widget dessine ce qu'il veut ; sa taille (`'s'`, `'m'`, `'l'`) est choisie avec « Disposer » ; ses boutons lancent tes `commands` (avec `background: true`, ton onglet ne s'ouvre pas) ; il a les mêmes autorisations que ton plugin. Exemple : le widget de NeoMusic |
 | `ctx.background.every(minutes, fn)` | `background` | une tâche de fond, même onglet fermé (plugin chargé au démarrage) |
 | `ctx.backup.list()` / `.restore(nom)` | `storage` | les sauvegardes de son dossier de données, et revenir à l'une d'elles |
 | `ctx.files.add/read/remove` | `files` | fichiers (images, exports…) du plugin |
