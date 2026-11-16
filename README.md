@@ -18,6 +18,21 @@ Ce dépôt décrit le format d'un plugin, l'API mise à disposition et la façon
 
 L'exemple complet le plus simple est dans [`examples/hello`](examples/hello).
 
+## Les sortes de plugins
+
+Un plugin n'est plus forcément une appli dans un onglet. Choisis la forme qui colle à ce que tu fais :
+
+| Sorte | `type` | Ce qu'il contient | Exemples |
+|-------|--------|-------------------|----------|
+| **Appli** | `app` | une vue (`entry` + `view`) qui s'ouvre dans un onglet, en bac à sable ; un widget d'accueil, des commandes, « ouvrir avec » en option | jeux, NeoSlides, NeoMusic |
+| **Extension de NeoDex** | `app` ou `mod` | un plugin signé en accès complet (`full`) qui modifie NeoDex lui-même : il se charge au démarrage (`"autoload": true`), ajoute ses boutons à l'interface et, s'il a besoin de Node, fait le travail dans son volet système (`main`) | Sorties anime, NBA (emploi du temps) |
+| **Extension du navigateur** | `app`, `"category": "Système"` | comme ci-dessus, mais il agit sur les **sites ouverts dans NeoDex** depuis son volet système : leurs sessions (`api.webSessions` : proxy, règles réseau) et le filtre des pages (`api.blocker`) | VPN, Bloqueur de pubs |
+| **Thème** | `theme` | rien que des thèmes (`themes`) : couleurs, style de base, et s'il veut son décor (`css`) et le style de la barre des tâches (`taskbar`) ; ni `entry`, ni `view`, ni code | Thème Ado |
+
+Une extension (de NeoDex ou du navigateur) demande `full`, donc une **signature** : elle ne tourne jamais en bac à sable.
+Elle doit fonctionner seule (le VPN et le bloqueur de pubs ont quitté NeoDex pour devenir des plugins : rien ne les remplace dans le cœur) et tout retirer quand elle est
+désactivée (la fonction rendue par `main.js`, `ctx.onClose` côté page).
+
 ## Le fichier `plugin.json`
 
 ```json
@@ -52,18 +67,22 @@ L'exemple complet le plus simple est dans [`examples/hello`](examples/hello).
 | `icon` | fichier image dans l'archive (PNG carré conseillé) |
 | `entry` | le script chargé par NeoDex (défaut `index.js`) |
 | `view` | identifiant de la vue que le plugin crée (unique) |
-| `neobase` | plage de versions de NeoDex compatibles (semver range) |
-| `type` | `app` (une application), `mod` (modifie NeoDex : sorties animes, calendrier…) ou `theme` (n'apporte que des thèmes) |
+| `neobase` | plage de versions de l'**API des plugins** de NeoDex compatibles (semver range ; aujourd'hui `4.1.0`) |
+| `neodex` | version de NeoDex demandée, ex. `">=3.2.2"` : un NeoDex plus ancien refuse l'installation et dit de le mettre à jour. À mettre dès que tu te sers d'une nouveauté (thème avec `css`, `api.blocker`…) |
+| `type` | `app` (une application), `mod` (modifie NeoDex : sorties animes, calendrier…) ou `theme` (n'apporte que des thèmes) ; voir « Les sortes de plugins » |
 | `category` | catégorie dans NeoStore (Jeux, Outils, Bureautique…) |
 | `mobile` | `true` si compatible avec le téléphone |
 | `compatibility` | **à déclarer dans chaque plugin** : les systèmes où il marche, parmi `"windows"`, `"android"` et `"linux"`. NeoDex refuse de l'installer sur un autre système et NeoStore affiche la liste sur la fiche. Un plugin qui lance du code natif (`main`, `system:main`, `system:startup`, `system:processes`) doit vérifier qu'il marche vraiment sur chaque système qu'il annonce. (Pour les anciens plugins sans le champ : `windows` et `linux`, plus `android` si `mobile` ; seulement `windows` si le plugin lance du code natif avec `system:main`, `system:startup` ou `system:processes`). NeoDex refuse de l'installer ailleurs et NeoStore l'affiche |
 | `system` | réservé : un plugin système ne peut pas être désinstallé et se range dans la catégorie « Système » (fixé par NeoDex, pas par l'auteur). Réservé aux applis qui dépendent du cœur de NeoDex |
+| `autoload` | `true` : chargé au démarrage de NeoDex, sans attendre qu'on l'ouvre (accès complet et signature exigés) ; pour les extensions |
 | `main` | le **volet système** du plugin : un fichier Node (`main.js`) chargé par NeoDex seulement si le plugin est signé, activé et que l'autorisation `system:main` est accordée (voir plus bas) |
 | `commands` | ses commandes : `[{ "id": "find", "title": "Chercher", "keys": "Ctrl+Alt+F", "global": false, "background": false }]`, dans la palette de commandes et la recherche de l'accueil (`ctx.commands.on`) ; `global` : raccourci actif hors de NeoDex (autorisation `shortcuts`) ; `background` : sans passer l'onglet au premier plan |
 | `opens` | « ouvrir avec » : les extensions qu'il sait ouvrir, `[".pdf"]` ; Fichiers et la Visionneuse lui envoient les fichiers (`ctx.onFiles`) |
 | `accepts` | ce qu'on peut lui partager : `["text", "url"]` (`ctx.onShare`) |
 | `widget` | le fichier JS de son widget sur l'accueil (ex. `"widget.js"`) : un module `export default function (ctx)` qui dessine ce qu'il veut dans sa propre iframe (son HTML, son CSS, ses animations), avec l'autorisation `widget` dans `permissions`. `true` : un widget en données, dessiné par NeoDex |
-| `themes` | des thèmes pour NeoDex (12 au plus) : `[{ "id": "menthe", "name": "Menthe", "hue": 150, "sat": 40, "accent": "#33dd99", "light": "#aaffdd", "third": "#ffd84a", "style": "jardin", "about": "…" }]`. `style` (facultatif) : le décor et les polices d'un style de NeoDex (`terminal`, `synthwave`, `jardin`, `steampunk`…). Un plugin de `type` `"theme"` n'a ni `entry` ni `view` et se range dans la catégorie Thèmes de NeoStore (NeoDex 3.2.1 et plus). |
+| `themes` | des thèmes pour NeoDex (12 au plus) : `[{ "id": "menthe", "name": "Menthe", "hue": 150, "sat": 40, "accent": "#33dd99", "light": "#aaffdd", "third": "#ffd84a", "style": "jardin", "about": "…" }]`. `accent`, `light` et `third` sont obligatoires. `style` (facultatif) : le décor et les polices d'un style de NeoDex (`terminal`, `synthwave`, `jardin`, `cyber`…). Voir « Les thèmes ». |
+| `syncMode` | ce que la synchro fait de ses données : `"aucune"` (jamais synchronisées, ex. le VPN), `"progression"` (le meilleur score ou l'appareil le plus récent gagne, défaut des jeux) ou `"fusion"` (ajouts et suppressions des deux côtés gardés, défaut des autres) |
+| `syncInfo` | une phrase (300 caractères au plus) qui explique ce choix, montrée sur la fiche |
 | `sync` | les règles de fusion de la synchro pour les documents du plugin (voir « Le dossier de données ») |
 | `dependencies` | autres plugins requis : `{ "neodex.autreplugin": ">=1.2.0" }` (installés automatiquement depuis le catalogue) |
 | `uses` | plugins dont celui-ci lit les données : `["neodex.peche"]` (demande la permission `data:<id>:read`) |
@@ -239,7 +258,13 @@ module.exports = api => {
 };
 ```
 
-`api` contient : `id`, `electron`, `getWin`, `dataDir`, `ipcMain.handle`, `emit`, `protocol`, `serveFile`, `onShortcutReset`, `readDoc` et `writeDoc` (les documents du dossier du plugin).
+`api` contient : `id`, `electron`, `getWin`, `dataDir`, `ipcMain.handle`, `emit`, `protocol`, `serveFile`, `onShortcutReset`, `readDoc` et `writeDoc` (les documents du dossier du plugin), et pour les extensions (NeoDex 3.2 et plus) :
+
+- `api.webSessions(fn)` : appelle `fn(session)` pour chaque session Electron des sites ouverts dans NeoDex (la normale, celles des onglets privés), celles d'avant et les prochaines. Le VPN y règle son proxy (`session.setProxy`), le Bloqueur de pubs y branche son filtre réseau.
+- `api.blocker({ off(url), isAd(url, page) })` : le filtre que NeoDex consulte pour les cadres des pages : `off(url)` dit que le blocage est coupé sur ce site, `isAd(url, page)` qu'une adresse est une pub. Un seul par plugin.
+- `api.onNotification(fn)` : chaque nouvelle notification de NeoDex, pour la relayer ailleurs.
+
+Tout ce qui est branché par ces fonctions est débranché quand le plugin est désactivé ou mis à jour.
 
 Dans la page du plugin : `await ctx.neo.pluginMain('<id>', 'mon:salut', 'toi')` appelle ce code, et `ctx.neo.onPluginMain(e => …)` reçoit ses événements (`e.id`, `e.name`, `e.data`). Les fichiers servis sont à l'adresse `neoplugin://<id>/…`. Mets `main.js` (et les fichiers qu'il utilise) dans l'archive, à côté de `plugin.json` et `index.js`. Un plugin peut appeler le volet système d'un autre en le déclarant dans `dependencies`.
 
@@ -269,6 +294,23 @@ retirer quand l'utilisateur décoche le réglage. Les plugins « Sorties anime �
 
 Mets une ou plusieurs captures dans le dépôt, dans `screenshots/1.jpg` (le thème Néon de NeoDex, 1280 × 800) : NeoStore les montre sur la
 fiche du plugin quand le catalogue les référence. Elles ne font pas partie de l'archive.
+
+### Les thèmes
+
+Un plugin de `type` `"theme"` se range dans la catégorie Thèmes de NeoStore ; ses thèmes apparaissent dans la galerie de
+Paramètres > Apparence (NeoDex 3.2.1 et plus). Chaque thème donne ses couleurs (`accent`, `light`, `third`, `hue`, `sat`) et
+reprend un style de base (`style`). Depuis NeoDex 3.2.2, il peut aussi apporter :
+
+- `css` : un fichier CSS posé sur la page quand le thème est choisi, et retiré quand on en change (le décor, le titre, les cadres) ;
+- `taskbar` : un fichier CSS pour la barre des tâches de NeoDex (une fenêtre à part : son bouton `#start`, ses applis `.app`,
+  `.app.fg`, `.count`, la zone `#tray`, l'heure `#clock`).
+
+Ces fichiers sont **nettoyés** avant d'être appliqués, pour qu'un thème ne charge jamais rien d'Internet : pas de barre oblique
+inverse ni de `@import`, et tout `url(...)` qui n'est pas une image ou une police en `data:` (`data:image/…`, `data:font/…`) devient
+`none`. Mets donc tes images et ta police **dans le fichier**, en base64, et garde-le sous 400 000 caractères (au-delà, il est coupé).
+Dans une image SVG en `data:`, encode les parenthèses (`%28`, `%29`). Commence tes sélecteurs par `html[data-style]` pour passer
+devant le style de base. Les animations doivent s'arrêter avec `@media (prefers-reduced-motion: reduce)`. Une police apportée par le
+thème doit avoir une licence qui permet de la redistribuer (OFL…) : joins sa licence dans l'archive.
 
 ### Le style d'un plugin
 

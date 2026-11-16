@@ -51,6 +51,10 @@
       "type": "string",
       "description": "plage semver des versions de NeoDex compatibles"
     },
+    "neodex": {
+      "type": "string",
+      "description": "version de NeoDex demandée (ex. \">=3.2.2\") : NeoDex refuse d'installer le plugin s'il est plus ancien"
+    },
     "type": {
       "enum": [
         "app",
@@ -69,7 +73,13 @@
     "compatibility": {
       "type": "array",
       "description": "Systèmes où le plugin marche, à déclarer dans chaque plugin. Ancien plugin sans ce champ : windows et linux, plus android si mobile ; windows seulement s'il lance du code natif.",
-      "items": { "enum": ["windows", "android", "linux"] },
+      "items": {
+        "enum": [
+          "windows",
+          "android",
+          "linux"
+        ]
+      },
       "minItems": 1,
       "uniqueItems": true
     },
@@ -83,7 +93,11 @@
       "description": "Volet système : fichier Node chargé si le plugin est signé, activé et a l'accès complet."
     },
     "syncMode": {
-      "enum": ["aucune", "progression", "fusion"],
+      "enum": [
+        "aucune",
+        "progression",
+        "fusion"
+      ],
       "description": "Comment la synchro entre appareils traite les données du plugin. aucune : jamais synchronisées. progression : jamais de conflit, le meilleur chiffre ou l'appareil le plus récent gagne (jeux). fusion : ajouts et suppressions des deux côtés gardés, un vrai conflit se règle dans fgestion. Sans ce champ : progression pour la catégorie Jeux, fusion sinon."
     },
     "syncInfo": {
@@ -235,27 +249,34 @@
     },
     "widget": {
       "oneOf": [
-        { "type": "boolean" },
-        { "type": "string", "pattern": "^[\\w-]+(/[\\w-]+)*\\.js$" }
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "pattern": "^[\\w-]+(/[\\w-]+)*\\.js$"
+        }
       ],
       "description": "le widget du plugin sur l'accueil : le fichier JS qui le dessine dans sa propre iframe (ex. \"widget.js\"), ou true pour un widget en données dessiné par NeoDex (ctx.widget)"
     },
     "themes": {
       "type": "array",
-      "maxItems": 20,
-      "description": "thèmes apportés par le plugin",
+      "maxItems": 12,
+      "description": "thèmes apportés par le plugin (12 au plus)",
       "items": {
         "type": "object",
         "additionalProperties": false,
         "required": [
           "id",
           "name",
-          "hue"
+          "accent",
+          "light",
+          "third"
         ],
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^[a-z0-9][a-z0-9_-]{0,29}$"
+            "pattern": "^[A-Za-z0-9_-]{1,30}$"
           },
           "name": {
             "type": "string",
@@ -282,6 +303,26 @@
           "third": {
             "type": "string",
             "pattern": "^#[0-9a-fA-F]{6}$"
+          },
+          "style": {
+            "type": "string",
+            "pattern": "^[a-z]{2,20}$",
+            "description": "style de base de NeoDex dont le thème reprend le décor et les polices (cyber, jardin, terminal…)"
+          },
+          "about": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "une phrase affichée dans la galerie des thèmes"
+          },
+          "css": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,40}\\.css$",
+            "description": "fichier CSS du décor de la page (NeoDex 3.2.2) : images et polices en data:, rien d'Internet"
+          },
+          "taskbar": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,40}\\.css$",
+            "description": "fichier CSS de la barre des tâches de NeoDex (NeoDex 3.2.2), mêmes règles que css"
           }
         }
       }
