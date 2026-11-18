@@ -178,6 +178,7 @@ NeoDex contrôle chaque appel lui-même. Un appel sans l'autorisation échoue av
 | `documents` | élevé | les fichiers du PC que l'utilisateur choisit ou glisse : ouvrir, convertir, lire un PDF, importer et exporter Word/Excel/PowerPoint (`ctx.neo.pdfRead`, `convRun`, `officeImport`, `pathOf`…) |
 | `screen` | élevé | une capture de l'écran (`screenCapture`) |
 | `music` | moyen | la bibliothèque de NeoMusic (`music*`) |
+| `camera` | moyen | le lecteur de QR code de l'appareil photo, téléphone seulement (`scanQR()` rend le texte lu, ou `null` si annulé ; jamais l'image). Toujours demandé à l'utilisateur |
 | `agenda` | faible | ses événements dans l'emploi du temps (`ctx.host.agenda.sync`) |
 | `taskbar` | faible | un compagnon sur la barre des tâches (`tbPet*`) |
 | `background` | moyen | des tâches de fond, et être chargé au démarrage |

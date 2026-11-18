@@ -96,6 +96,13 @@
       "risk": "élevé"
     },
     {
+      "id": "camera",
+      "label": "Lecteur de QR code",
+      "sentence": "Peut ouvrir l'appareil photo pour lire un QR code : il reçoit seulement le texte lu, jamais l'image (téléphone).",
+      "risk": "moyen",
+      "sensitive": true
+    },
+    {
       "id": "music",
       "label": "Ta bibliothèque NeoMusic",
       "sentence": "Peut lire et ajouter des morceaux dans ta bibliothèque de musique.",
