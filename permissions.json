@@ -96,6 +96,12 @@
       "risk": "élevé"
     },
     {
+      "id": "rooms",
+      "label": "Parties à distance",
+      "sentence": "Peut ouvrir une partie à plusieurs par un code, sur le serveur NeoDex : il n'échange que les messages du jeu avec les autres joueurs de la partie.",
+      "risk": "faible"
+    },
+    {
       "id": "camera",
       "label": "Lecteur de QR code",
       "sentence": "Peut ouvrir l'appareil photo pour lire un QR code : il reçoit seulement le texte lu, jamais l'image (téléphone).",

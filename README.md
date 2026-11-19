@@ -45,7 +45,7 @@ désactivée (la fonction rendue par `main.js`, `ctx.onClose` côté page).
   "icon": "icon.png",
   "entry": "index.js",
   "view": "hello",
-  "neobase": ">=4.1.0",
+  "neobase": ">=4.2.0",
   "sdk": "2.1.0",
   "type": "app",
   "category": "Outils",
@@ -67,7 +67,7 @@ désactivée (la fonction rendue par `main.js`, `ctx.onClose` côté page).
 | `icon` | fichier image dans l'archive (PNG carré conseillé) |
 | `entry` | le script chargé par NeoDex (défaut `index.js`) |
 | `view` | identifiant de la vue que le plugin crée (unique) |
-| `neobase` | plage de versions de l'**API des plugins** de NeoDex compatibles (semver range ; aujourd'hui `4.1.0`) |
+| `neobase` | plage de versions de l'**API des plugins** de NeoDex compatibles (semver range ; aujourd'hui `4.2.0` : `rooms` et `ctx.room` arrivent en 4.2.0) |
 | `neodex` | version de NeoDex demandée, ex. `">=3.2.2"` : un NeoDex plus ancien refuse l'installation et dit de le mettre à jour. À mettre dès que tu te sers d'une nouveauté (thème avec `css`, `api.blocker`…) |
 | `type` | `app` (une application), `mod` (modifie NeoDex : sorties animes, calendrier…) ou `theme` (n'apporte que des thèmes) ; voir « Les sortes de plugins » |
 | `category` | catégorie dans NeoStore (Jeux, Outils, Bureautique…) |
@@ -151,6 +151,7 @@ Ce que le bac à sable interdit passe par NeoDex, qui vérifie l'autorisation à
 | `ctx.net(url, opts)` | `network` ou `network:<domaine>` | requêtes réseau sortantes |
 | `ctx.permission(nom, raison)` | toujours | demander une autorisation au moment de l'utiliser, en disant pourquoi ; l'utilisateur choisit « cette fois », « toujours » ou « refuser » ; renvoie un booléen |
 | `ctx.notifications.send({ title, body, open })` | `notifications` | une notification dans le centre de notifications de NeoDex (et une notification Windows si NeoDex n'est pas au premier plan) ; `open` : ce qu'un clic ouvre (`https://…`, `plugin:<id>`, `neodex:…`) |
+| `ctx.room.create(nom)`, `ctx.room.join(code, nom)`, `send(data, versId?)`, `on(f)`, `leave()` | `rooms` | une partie à plusieurs par un code de 6 lettres, sur le serveur NeoDex : `create`/`join` rendent `{ code, id, host, joueurs }` ; `on` reçoit `{ t: 'arrive' \| 'part' \| 'msg' \| 'fin', … }` (`msg` : `{ from, data }`). Le serveur relaie seulement, entre les joueurs du même jeu et du même code (8 au plus, 16 Ko par message) |
 
 ### Les autorisations
 
@@ -178,6 +179,7 @@ NeoDex contrôle chaque appel lui-même. Un appel sans l'autorisation échoue av
 | `documents` | élevé | les fichiers du PC que l'utilisateur choisit ou glisse : ouvrir, convertir, lire un PDF, importer et exporter Word/Excel/PowerPoint (`ctx.neo.pdfRead`, `convRun`, `officeImport`, `pathOf`…) |
 | `screen` | élevé | une capture de l'écran (`screenCapture`) |
 | `music` | moyen | la bibliothèque de NeoMusic (`music*`) |
+| `rooms` | faible | les parties à distance (`ctx.room`) : seuls les messages du jeu passent par le serveur NeoDex, rien d'autre du PC |
 | `camera` | moyen | le lecteur de QR code de l'appareil photo, téléphone seulement (`scanQR()` rend le texte lu, ou `null` si annulé ; jamais l'image). Toujours demandé à l'utilisateur |
 | `agenda` | faible | ses événements dans l'emploi du temps (`ctx.host.agenda.sync`) |
 | `taskbar` | faible | un compagnon sur la barre des tâches (`tbPet*`) |
